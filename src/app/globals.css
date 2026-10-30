@@ -1,7 +1,6 @@
 /* Hallmark · checked: 2026-10-30 · genre: modern-minimal (inferred) · system: DESIGN.md (locked)
  * floor: 0 FAIL · fixed: 7 (30a, 63 x2, 40 x2, 26a, F16) · reflex fixed: 59 · structural: 3 printed (6b, 8, 9)
  * built: the project · redesign: polish · v2.0.0 */
-/* Hallmark · dismissed 23 · .hero-write::after is the 2px pen mark riding the written headline, never a viewport-scale fill */
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -150,94 +149,34 @@
   }
 }
 
-/* Hero load sequence: the headline is written left to right while the background
-   settles around it. CSS only, so it runs before hydration; transform and opacity only.
-   Timeline: code lines 0–0.9s · diff blocks 0.3–1.7s · "Review smarter." 0.2–1.2s ·
-   "Ship confidently." 1.0–2.1s · sentence + actions 1.2–1.8s · chips 2.0–2.8s */
+/* Hero load sequence: the headline fades in word by word while loose strands draw in
+   behind; the sentence and actions follow, then the comment chips land.
+   stroke-dashoffset draws the strands. Timeline: strands 0–2.1s · words 0.15–1.8s ·
+   sentence + actions 1.6–2.2s · chips 2.6–3.4s */
 
-.hero-write {
-  position: relative;
-  display: inline-block;
-  overflow: clip;
-  /* room for cursive overhangs and descenders inside the clip */
-  padding: 0.05em 0.2em 0.22em;
-  margin: -0.05em -0.2em -0.22em;
-  animation: hero-write-mover var(--duration, 1s) var(--delay, 0s) cubic-bezier(0.45, 0, 0.25, 1)
-    both;
+.hero-word {
+  animation: hero-rise 0.7s var(--delay, 0s) cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-.hero-ink {
-  display: inline-block;
-  animation: hero-write-ink var(--duration, 1s) var(--delay, 0s) cubic-bezier(0.45, 0, 0.25, 1) both;
-}
-
-/* the pen tip riding the writing edge */
-.hero-write::after {
-  content: "";
-  position: absolute;
-  top: 18%;
-  right: 0.12em;
-  bottom: 26%;
-  width: 2px;
-  border-radius: 2px;
-  background: var(--color-accent);
-  animation: hero-pen var(--duration, 1s) var(--delay, 0s) linear both;
-}
-
-.hero-fade {
-  animation: hero-fade 0.9s ease-out both;
-}
-
-.hero-rise {
-  transform-box: fill-box;
-  animation: hero-rise 0.8s var(--delay, 0s) cubic-bezier(0.2, 0.7, 0.2, 1) both;
+.hero-strand {
+  stroke-dasharray: 1 1;
+  animation: hero-draw 1.6s var(--delay, 0s) cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .hero-land {
-  animation: hero-land 0.6s var(--delay, 0s) cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: hero-land 0.7s var(--delay, 0s) cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 .hero-after {
-  animation: hero-rise 0.6s 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: hero-rise 0.6s 1.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-@keyframes hero-write-mover {
+@keyframes hero-draw {
   from {
-    transform: translateX(-102%);
+    stroke-dashoffset: 1;
   }
   to {
-    transform: none;
-  }
-}
-
-@keyframes hero-write-ink {
-  from {
-    transform: translateX(102%);
-  }
-  to {
-    transform: none;
-  }
-}
-
-@keyframes hero-pen {
-  0% {
-    opacity: 0;
-  }
-  4%,
-  92% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes hero-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
+    stroke-dashoffset: 0;
   }
 }
 
@@ -264,16 +203,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-write,
-  .hero-ink,
-  .hero-write::after,
-  .hero-fade,
-  .hero-rise,
+  .hero-word,
+  .hero-strand,
   .hero-land,
   .hero-after {
     animation: none;
-  }
-  .hero-write::after {
-    opacity: 0;
   }
 }

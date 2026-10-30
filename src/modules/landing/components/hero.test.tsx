@@ -32,14 +32,14 @@ describe("Hero intro animation", () => {
   const all = readFileSync("src/app/globals.css", "utf8");
   const css = all.slice(all.indexOf("/* Hero load sequence"));
 
-  it("writes each headline line with a reveal", () => {
+  it("fades the headline in word by word", () => {
     const { container } = render(<Hero />);
-    const lines = container.querySelectorAll("h1 [data-write]");
-    expect(lines).toHaveLength(2);
-    for (const line of lines) {
-      expect(line).toHaveClass("hero-write");
-      expect(line.firstElementChild).toHaveClass("hero-ink");
-    }
+    const words = [...container.querySelectorAll("h1 .hero-word")];
+    expect(words.map((w) => w.textContent)).toEqual(["Review", "smarter.", "Ship", "confidently."]);
+    const delays = words.map((w) =>
+      Number.parseFloat((w as HTMLElement).style.getPropertyValue("--delay")),
+    );
+    for (let i = 1; i < delays.length; i++) expect(delays[i]).toBeGreaterThan(delays[i - 1]);
   });
 
   it("turns every intro animation off for reduced motion", () => {
@@ -47,12 +47,15 @@ describe("Hero intro animation", () => {
     expect(reduced).toMatch(/animation:\s*none/);
   });
 
-  it("animates only transform and opacity", () => {
+  // stroke-dashoffset draws the background strands in.
+  it("animates only transform, opacity and the strands' stroke-dashoffset", () => {
     const frames = [...css.matchAll(/@keyframes[^{]+\{([\s\S]*?\})\s*\}/g)].map((m) => m[1]);
     expect(frames.length).toBeGreaterThan(0);
     for (const body of frames) {
       const props = [...body.matchAll(/([a-z-]+)\s*:/g)].map((m) => m[1]);
-      expect(props.every((p) => p === "transform" || p === "opacity")).toBe(true);
+      expect(props.every((p) => ["transform", "opacity", "stroke-dashoffset"].includes(p))).toBe(
+        true,
+      );
     }
   });
 });
