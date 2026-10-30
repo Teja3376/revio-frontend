@@ -1,3 +1,3 @@
-export default function Page() {
-  return <main />;
-}
+import { LandingPage } from "@/modules/landing";
+
+export default LandingPage;

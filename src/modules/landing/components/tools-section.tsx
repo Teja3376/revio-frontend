@@ -36,7 +36,11 @@ export function ToolsSection() {
         {TOOLS.map(({ title, body, when, depth, Sample }, i) => (
           <div
             key={title}
-            className="grid items-center gap-8 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-14"
+            className={`grid grid-cols-[minmax(0,1fr)] items-center gap-8 md:gap-14 ${
+              i % 2 === 1
+                ? "md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+                : "md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+            }`}
           >
             <div className={i % 2 === 1 ? "md:order-2" : undefined}>
               <h3 className="text-2xl font-semibold text-text">{title}</h3>

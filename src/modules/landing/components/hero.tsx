@@ -22,7 +22,7 @@ export function Hero() {
           <span className="block">Review smarter.</span>{" "}
           <span className="block text-accent">Ship confidently.</span>
         </h1>
-        <p className="mt-6 max-w-md text-lg text-text-muted">
+        <p className="mt-6 max-w-xl text-lg text-text-muted">
           AI code review in your terminal, editor and pull requests.
         </p>
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:items-start">
