@@ -92,12 +92,12 @@ export function DiffBlocksLayer() {
   );
 }
 
-type Chip = { label: string; dot: string; position: string };
+type Chip = { label: string; tone: string; position: string };
 
 const CHIPS: Chip[] = [
-  { label: "possible null", dot: "bg-warning", position: "left-[7%] top-[24%]" },
-  { label: "unsanitized input", dot: "bg-danger", position: "right-[8%] top-[64%]" },
-  { label: "N+1 query", dot: "bg-info", position: "left-[12%] top-[76%]" },
+  { label: "possible null", tone: "text-warning", position: "left-[7%] top-[24%]" },
+  { label: "unsanitized input", tone: "text-danger", position: "right-[8%] top-[64%]" },
+  { label: "N+1 query", tone: "text-info", position: "left-[12%] top-[76%]" },
 ];
 
 /** Near layer: review comments with Revio's amber underline. */
@@ -106,8 +106,9 @@ export function CommentChipsLayer() {
     <div aria-hidden="true" className="relative size-full">
       {CHIPS.map((c) => (
         <div key={c.label} className={`absolute flex flex-col items-start gap-1 ${c.position}`}>
-          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-raised px-3 py-1.5 text-xs text-text-muted">
-            <span className={`size-1.5 rounded-full ${c.dot}`} />
+          <span
+            className={`rounded-full border border-border bg-surface-raised px-3 py-1.5 text-xs ${c.tone}`}
+          >
             {c.label}
           </span>
           <svg

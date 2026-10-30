@@ -7,7 +7,7 @@ const counts = (["error", "warning", "info"] as const)
   .map((s) => ({ s, n: SAMPLE_ISSUES.filter((i) => i.severity === s).length }))
   .filter((c) => c.n > 0)
   .map((c) => `${c.n} ${c.s}${c.n > 1 ? "s" : ""}`)
-  .join(" · ");
+  .join(", ");
 
 function Comment({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -25,10 +25,7 @@ export function GithubSample() {
     <div className="flex flex-col gap-4">
       <Comment title={`commented on ${inline.file} line ${inline.line}`}>
         <p>
-          <span className="text-danger">
-            {inline.severity} · {inline.category}
-          </span>{" "}
-          {inline.message}
+          <span className="text-danger">Security error:</span> {inline.message}
         </p>
         <div className="mt-3 overflow-x-auto rounded-lg border border-border text-[13px] whitespace-pre">
           <p className="border-b border-border px-3 py-1.5 text-xs text-text-muted">
@@ -44,11 +41,12 @@ export function GithubSample() {
         </div>
       </Comment>
       <Comment title="Revio review">
-        <p>
-          <span className="text-text-muted">Risk:</span>{" "}
-          <span className="font-semibold text-danger">high</span>
-          <span className="text-text-muted"> · {counts}</span>
-        </p>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+          <dt className="text-text-muted">Risk</dt>
+          <dd className="font-semibold text-danger">High</dd>
+          <dt className="text-text-muted">Issues</dt>
+          <dd className="text-text">{counts}</dd>
+        </dl>
         <p className="mt-2 text-text-muted">
           Adds a user lookup endpoint. The query is built from request input, and a missing user
           crashes the handler.

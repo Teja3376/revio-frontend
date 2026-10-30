@@ -4,7 +4,7 @@ import { CopyCommand } from "./copy-command";
 export function InstallSection() {
   return (
     <section aria-labelledby="install-heading" className="border-t border-border">
-      <div className="mx-auto max-w-[1120px] px-6 py-24">
+      <div className="mx-auto max-w-[1120px] px-6 pt-28 pb-36">
         <h2 id="install-heading" className="text-3xl font-semibold text-text">
           Get Revio
         </h2>

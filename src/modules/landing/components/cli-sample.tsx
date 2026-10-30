@@ -1,12 +1,14 @@
+import { Info, TriangleAlert, X } from "lucide-react";
 import type { SampleIssue } from "../sample-issues";
 import { SAMPLE_ISSUES } from "../sample-issues";
 
 // Mirrors revio-backend/packages/cli/src/format.ts (formatIssues) without color codes.
-const ICON = { error: "✖", warning: "⚠", info: "ℹ" } as const;
+// The CLI's text glyphs are drawn as icons here (Hallmark bans glyphs as icons).
+const ICON = { error: X, warning: TriangleAlert, info: Info } as const;
 const TONE = { error: "text-danger", warning: "text-warning", info: "text-info" } as const;
 
 export function formatCliLine(issue: SampleIssue): { head: string; suggestion?: string } {
-  const head = `${issue.file}:${issue.line}  ${ICON[issue.severity]} ${issue.severity}  [${issue.category}] ${issue.message}`;
+  const head = `${issue.file}:${issue.line}  ${issue.severity}  [${issue.category}] ${issue.message}`;
   return issue.suggestion ? { head, suggestion: `    → ${issue.suggestion}` } : { head };
 }
 
@@ -24,15 +26,27 @@ export function CliSample() {
             <p data-testid="cli-head">
               <span className="font-semibold text-text">{`${i.file}:${i.line}`}</span>
               {"  "}
-              <span className={TONE[i.severity]}>{`${ICON[i.severity]} ${i.severity}`}</span>
+              <SeverityLabel severity={i.severity} />
               {"  "}
               <span className="text-text-muted">{`[${i.category}]`}</span>
               {` ${i.message}`}
             </p>
-            {i.suggestion ? <p className="text-diff-add">{formatCliLine(i).suggestion}</p> : null}
+            {i.suggestion ? (
+              <p className="text-jet_black-800">{formatCliLine(i).suggestion}</p>
+            ) : null}
           </div>
         ))}
       </div>
     </div>
+  );
+}
+
+function SeverityLabel({ severity }: { severity: SampleIssue["severity"] }) {
+  const Icon = ICON[severity];
+  return (
+    <span className={`inline-flex items-baseline gap-1 ${TONE[severity]}`}>
+      <Icon aria-hidden="true" className="size-3 self-center" />
+      {severity}
+    </span>
   );
 }

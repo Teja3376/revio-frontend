@@ -19,7 +19,7 @@ export function VscodeSample() {
       <div className="overflow-x-auto px-5 py-4 whitespace-pre">
         {CODE.map((row) => (
           <p key={row.n}>
-            <span aria-hidden="true" className="mr-5 inline-block w-6 text-right text-dim_grey-500">
+            <span aria-hidden="true" className="mr-5 inline-block w-6 text-right text-dim_grey-600">
               {row.n}
             </span>
             <span
@@ -36,7 +36,7 @@ export function VscodeSample() {
       </div>
       <div className="mx-5 mb-5 rounded-lg border border-border bg-surface-raised p-4">
         <p className="text-text">
-          <span className="text-danger">Revio · {flagged.category}</span> {flagged.message}
+          <span className="text-danger">Revio, security:</span> {flagged.message}
         </p>
         <p className="mt-3 inline-flex items-center gap-2 text-accent">
           <Lightbulb aria-hidden="true" className="size-4" />

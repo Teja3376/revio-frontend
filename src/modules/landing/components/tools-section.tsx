@@ -28,7 +28,7 @@ const TOOLS = [
 
 export function ToolsSection() {
   return (
-    <section aria-labelledby="tools-heading" className="mx-auto max-w-[1120px] px-6 py-24">
+    <section aria-labelledby="tools-heading" className="mx-auto max-w-[1120px] px-6 py-32">
       <h2 id="tools-heading" className="font-display text-4xl text-text md:text-5xl">
         One reviewer, three places.
       </h2>
