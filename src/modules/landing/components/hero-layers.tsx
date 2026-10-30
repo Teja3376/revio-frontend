@@ -96,7 +96,7 @@ type Chip = { label: string; tone: string; position: string };
 
 const CHIPS: Chip[] = [
   { label: "possible null", tone: "text-warning", position: "left-[7%] top-[24%]" },
-  { label: "unsanitized input", tone: "text-danger", position: "right-[8%] top-[64%]" },
+  { label: "unsanitized input", tone: "text-rich_mahogany-900", position: "right-[8%] top-[64%]" },
   { label: "N+1 query", tone: "text-info", position: "left-[12%] top-[76%]" },
 ];
 
