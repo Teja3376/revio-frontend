@@ -20,7 +20,9 @@ describe("ConnectForm", () => {
     sendMessage.mockResolvedValue({ status: "sent" });
     render(<ConnectForm />);
     await fill();
-    expect(await screen.findByText(/thanks, your message is in/i)).toBeInTheDocument();
+    const thanks = await screen.findByText(/thanks, your message is in/i);
+    // focus moves to the message so screen readers announce it
+    expect(thanks).toHaveFocus();
   });
 
   it("shows the field error next to its field", async () => {
@@ -29,6 +31,8 @@ describe("ConnectForm", () => {
     await fill();
     expect(await screen.findByText("Enter a valid email.")).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toHaveAttribute("aria-invalid", "true");
+    // focus goes to the first field with a problem
+    expect(screen.getByLabelText("Email")).toHaveFocus();
   });
 
   it("keeps what the user typed when sending fails", async () => {

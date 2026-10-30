@@ -14,7 +14,14 @@ export const ContactSchema = z.object({
     .trim()
     .min(1, { error: "Tell me your name." })
     .max(100, { error: "Keep the name under 100 characters." }),
-  email: z.email({ error: "Enter a valid email." }).trim().max(200),
+  email: z
+    .string()
+    .trim()
+    .pipe(
+      z
+        .email({ error: "Enter a valid email." })
+        .max(200, { error: "Keep the email under 200 characters." }),
+    ),
   topic: z.enum(["feedback", "bug", "collaborate", "hire"], { error: "Pick a topic." }),
   message: z
     .string()

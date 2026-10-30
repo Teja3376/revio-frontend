@@ -146,8 +146,8 @@ export function DocsPage() {
             </p>
             <CodeBlock label="~/.zshrc">{'export GEMINI_API_KEY="your-key"'}</CodeBlock>
             <p>
-              Open a new terminal afterwards. In VS Code the key is stored in the editor’s secret
-              storage, never in your settings file.
+              Open a new terminal afterwards. The VS Code extension will keep its key in the
+              editor’s secret storage, never in your settings file.
             </p>
             <p>
               If Gemini answers <Code>403 free tier not available</Code>, turn on billing for the
@@ -177,8 +177,13 @@ export function DocsPage() {
             <p>To stop commits that have an error-level issue:</p>
             <Command>revio hook install --block-on error</Command>
             <p>
+              With <Code>--block-on</Code>, the commit also stops when the review can’t run: no
+              Gemini key, a bad <Code>.revio.json</Code>, or Gemini being down or refusing the key.
+              Use <Code>git commit --no-verify</Code> to skip the hook once.
+            </p>
+            <p>
               It works with plain git hooks, a custom <Code>core.hooksPath</Code> and husky v9, and
-              leaves the rest of your hook untouched. Remove it with:
+              keeps the commands already in your hook. Remove it with:
             </p>
             <Command>revio hook uninstall</Command>
           </DocSection>
@@ -191,12 +196,18 @@ export function DocsPage() {
               label="CLI commands"
               head={["Command", "What it does"]}
               rows={[
-                [<Code key="c">revio review</Code>, "Reviews your uncommitted changes."],
+                [
+                  <Code key="c">revio review</Code>,
+                  <span key="d">
+                    Reviews changes to tracked files since your last commit. New files need{" "}
+                    <Code>git add</Code> first.
+                  </span>,
+                ],
                 [<Code key="c">revio review --staged</Code>, "Reviews only what you’ve staged."],
                 [<Code key="c">revio review --base main</Code>, "Reviews every commit since main."],
                 [
                   <Code key="c">revio review --depth normal</Code>,
-                  "Goes deeper than the default quick review.",
+                  "Goes deeper than your default (quick, or depth.cli in .revio.json).",
                 ],
                 [
                   <Code key="c">revio watch</Code>,
@@ -217,7 +228,7 @@ export function DocsPage() {
                 ["1", "An issue reached the --block-on severity."],
                 [
                   "2",
-                  "Something stopped the review: not a git repo, bad config, missing key or a Gemini error.",
+                  "Something stopped the review: a bad flag, not a git repo, bad config, a missing key or a Gemini error.",
                 ],
               ]}
             />
@@ -284,8 +295,8 @@ export function DocsPage() {
           <DocSection id="faq" title="FAQ">
             <h3 className="font-medium text-text">Does Revio keep my code?</h3>
             <p>
-              No. The CLI and the extension send the changed lines straight to Gemini with your key.
-              The GitHub App stores review results, never your code or diffs.
+              No. The CLI and the extension send the changed parts of your files straight to Gemini
+              with your key. The GitHub App stores review results, never your code or diffs.
             </p>
             <h3 className="font-medium text-text">Why did Revio report nothing?</h3>
             <p>

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const insert = vi.fn();
 const from = vi.fn(() => ({ insert }));
-vi.mock("@/lib/supabase/server", () => ({ createServerSupabase: async () => ({ from }) }));
+vi.mock("@/lib/supabase/admin", () => ({ createAdminSupabase: () => ({ from }) }));
 
 import { sendMessage } from "./actions";
 
@@ -51,7 +51,7 @@ describe("sendMessage", () => {
   });
 
   it("pretends success for bots that fill the hidden field", async () => {
-    expect(await sendMessage(IDLE, form({ ...valid, website: "http://spam" }))).toEqual({
+    expect(await sendMessage(IDLE, form({ ...valid, hp_extra: "http://spam" }))).toEqual({
       status: "sent",
     });
     expect(insert).not.toHaveBeenCalled();
@@ -59,13 +59,24 @@ describe("sendMessage", () => {
 
   it("reports a failure when saving fails", async () => {
     insert.mockResolvedValue({ error: { message: "relation does not exist" } });
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
     const state = await sendMessage(IDLE, form(valid));
     expect(state.status).toBe("error");
     // returned so the form can refill what the user typed
     expect(state.status === "error" && state.values).toEqual(valid);
+    // the owner can see why sends fail
+    expect(log).toHaveBeenCalled();
+    log.mockRestore();
+  });
+
+  it("reports the database's rate limit as a friendly message", async () => {
+    insert.mockResolvedValue({ error: { message: "rate_limited: too many messages" } });
+    const state = await sendMessage(IDLE, form(valid));
+    expect(state.status === "error" && state.message).toMatch(/too many messages/i);
   });
 
   it("reports a failure when the client throws", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
     from.mockImplementationOnce(() => {
       throw new Error("Your project's URL and Key are required");
     });

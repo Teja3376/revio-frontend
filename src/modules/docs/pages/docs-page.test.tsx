@@ -56,4 +56,16 @@ describe("DocsPage", () => {
       expect(within(table).getByText(key)).toBeInTheDocument();
     }
   });
+
+  it("tells users new files need git add before revio review sees them", () => {
+    const { container } = render(<DocsPage />);
+    expect(container.textContent).toContain("git add");
+  });
+
+  it("warns that --block-on in the hook also blocks commits when the review can't run", () => {
+    const hook = document.createElement("div");
+    const { container } = render(<DocsPage />);
+    hook.innerHTML = container.querySelector("#setup-hook")?.innerHTML ?? "";
+    expect(hook.textContent).toMatch(/can.t run/i);
+  });
 });

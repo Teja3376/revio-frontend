@@ -153,7 +153,7 @@
 /* Hero load sequence: the headline is written left to right while the background
    settles around it. CSS only, so it runs before hydration; transform and opacity only.
    Timeline: code lines 0–0.9s · diff blocks 0.3–1.7s · "Review smarter." 0.2–1.2s ·
-   "Ship confidently." 1.0–2.1s · sentence + actions 1.9–2.5s · chips 2.0–2.8s */
+   "Ship confidently." 1.0–2.1s · sentence + actions 1.2–1.8s · chips 2.0–2.8s */
 
 .hero-write {
   position: relative;
@@ -198,7 +198,7 @@
 }
 
 .hero-after {
-  animation: hero-rise 0.6s 1.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: hero-rise 0.6s 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 @keyframes hero-write-mover {

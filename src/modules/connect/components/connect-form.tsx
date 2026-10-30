@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { sendMessage } from "../actions";
 import { type ContactState, type ContactValues, TOPICS } from "../schema";
@@ -13,9 +13,25 @@ export function ConnectForm() {
     status: "idle",
   });
 
+  const formRef = useRef<HTMLFormElement>(null);
+  const thanksRef = useRef<HTMLParagraphElement>(null);
+
+  // Move focus so screen-reader users hear what happened.
+  useEffect(() => {
+    if (state.status === "sent") thanksRef.current?.focus();
+    if (state.status === "invalid") {
+      formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+    }
+  }, [state]);
+
   if (state.status === "sent") {
     return (
-      <p role="status" className="rounded-xl border border-border bg-surface p-6 text-text">
+      <p
+        ref={thanksRef}
+        tabIndex={-1}
+        role="status"
+        className="rounded-xl border border-border bg-surface p-6 text-text"
+      >
         Thanks, your message is in. I’ll reply by email.
       </p>
     );
@@ -36,7 +52,7 @@ export function ConnectForm() {
     ) : null;
 
   return (
-    <form action={action} noValidate className="flex flex-col gap-5">
+    <form ref={formRef} action={action} noValidate className="flex flex-col gap-5">
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <label htmlFor="name" className="text-sm text-text">
@@ -45,6 +61,7 @@ export function ConnectForm() {
           <input
             id="name"
             name="name"
+            required
             autoComplete="name"
             defaultValue={values.name}
             className={field}
@@ -59,6 +76,7 @@ export function ConnectForm() {
           <input
             id="email"
             name="email"
+            required
             type="email"
             autoComplete="email"
             defaultValue={values.email}
@@ -94,6 +112,7 @@ export function ConnectForm() {
         <textarea
           id="message"
           name="message"
+          required
           rows={6}
           defaultValue={values.message}
           className={field}
@@ -103,8 +122,8 @@ export function ConnectForm() {
       </div>
       {/* Honeypot: hidden from people and screen readers, filled only by bots. */}
       <div aria-hidden="true" className="absolute -left-[9999px] size-px overflow-hidden">
-        <label htmlFor="website">Website</label>
-        <input id="website" name="website" tabIndex={-1} autoComplete="off" />
+        <label htmlFor="hp_extra">Leave this empty</label>
+        <input id="hp_extra" name="hp_extra" tabIndex={-1} autoComplete="off" />
       </div>
       <div className="flex flex-wrap items-center gap-4">
         <Button type="submit" size="xl" disabled={pending}>

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   variant?: "primary" | "text";
-  /** Shows "Sign in" on small screens; the accessible name stays "Sign in with GitHub". */
+  /** Shows the shorter "Sign in" label on small screens. */
   compact?: boolean;
   className?: string;
 };
