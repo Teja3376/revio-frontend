@@ -4,10 +4,10 @@ import { SiteHeader } from "./components/site-header";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
-    <>
+    <div className="flex min-h-svh flex-col">
       <SiteHeader />
-      <main>{children}</main>
+      <main className="flex-1">{children}</main>
       <SiteFooter />
-    </>
+    </div>
   );
 }

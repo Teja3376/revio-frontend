@@ -1,6 +1,7 @@
 /* Hallmark · checked: 2026-10-30 · genre: modern-minimal (inferred) · system: DESIGN.md (locked)
  * floor: 0 FAIL · fixed: 7 (30a, 63 x2, 40 x2, 26a, F16) · reflex fixed: 59 · structural: 3 printed (6b, 8, 9)
  * built: the project · redesign: polish · v2.0.0 */
+/* Hallmark · dismissed 23 · .hero-write::after is the 2px pen mark riding the written headline, never a viewport-scale fill */
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -71,6 +72,7 @@
   --color-text-muted: var(--color-dim_grey-700);
   --color-accent: var(--color-brown_bark-700);
   --color-accent-fg: var(--color-coffee_bean-500);
+  --color-accent-ink: var(--color-accent-fg);
   --color-danger: var(--color-rich_mahogany-800);
   --color-warning: var(--color-brown_bark-800);
   --color-info: var(--color-jet_black-800);
