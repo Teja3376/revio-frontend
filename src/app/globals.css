@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* The only place hex colors live. Owner's palette, steps 100–900 (500 = DEFAULT). */
+@theme {
+  --color-coffee_bean-100: #030103;
+  --color-coffee_bean-200: #050206;
+  --color-coffee_bean-300: #080309;
+  --color-coffee_bean-400: #0a050c;
+  --color-coffee_bean-500: #0d060f;
+  --color-coffee_bean-600: #4a2255;
+  --color-coffee_bean-700: #863e9b;
+  --color-coffee_bean-800: #b573c7;
+  --color-coffee_bean-900: #dab9e3;
+
+  --color-jet_black-100: #060807;
+  --color-jet_black-200: #0c100f;
+  --color-jet_black-300: #121816;
+  --color-jet_black-400: #19211d;
+  --color-jet_black-500: #1e2824;
+  --color-jet_black-600: #445b52;
+  --color-jet_black-700: #6a8d7f;
+  --color-jet_black-800: #9bb4aa;
+  --color-jet_black-900: #cdd9d4;
+
+  --color-brown_bark-100: #130c05;
+  --color-brown_bark-200: #25180a;
+  --color-brown_bark-300: #38240e;
+  --color-brown_bark-400: #4b3013;
+  --color-brown_bark-500: #5d3c18;
+  --color-brown_bark-600: #9c6428;
+  --color-brown_bark-700: #cf8c44;
+  --color-brown_bark-800: #dfb282;
+  --color-brown_bark-900: #efd9c1;
+
+  --color-dim_grey-100: #181514;
+  --color-dim_grey-200: #2f2b28;
+  --color-dim_grey-300: #47403d;
+  --color-dim_grey-400: #5f5651;
+  --color-dim_grey-500: #766b65;
+  --color-dim_grey-600: #948881;
+  --color-dim_grey-700: #afa6a1;
+  --color-dim_grey-800: #cac3c0;
+  --color-dim_grey-900: #e4e1e0;
+
+  --color-rich_mahogany-100: #070000;
+  --color-rich_mahogany-200: #0e0000;
+  --color-rich_mahogany-300: #150000;
+  --color-rich_mahogany-400: #1d0000;
+  --color-rich_mahogany-500: #230000;
+  --color-rich_mahogany-600: #830000;
+  --color-rich_mahogany-700: #e10000;
+  --color-rich_mahogany-800: #ff4141;
+  --color-rich_mahogany-900: #ffa0a0;
+}
+
+/* Semantic tokens: use these in components, not the raw palette. */
+@theme {
+  --color-bg: var(--color-coffee_bean-500);
+  --color-surface: var(--color-jet_black-400);
+  --color-surface-raised: var(--color-jet_black-500);
+  --color-border: var(--color-dim_grey-300);
+  --color-text: var(--color-dim_grey-900);
+  --color-text-muted: var(--color-dim_grey-700);
+  --color-accent: var(--color-brown_bark-700);
+  --color-accent-fg: var(--color-coffee_bean-500);
+  --color-danger: var(--color-rich_mahogany-800);
+  --color-warning: var(--color-brown_bark-800);
+  --color-info: var(--color-jet_black-800);
+  --color-diff-add: var(--color-jet_black-700);
+  --color-diff-del: var(--color-rich_mahogany-600);
+  --color-highlight: var(--color-coffee_bean-800);
+
+  /* shadcn's names, pointed at Revio's tokens */
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-text);
+  --color-popover: var(--color-surface-raised);
+  --color-popover-foreground: var(--color-text);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: var(--color-accent-fg);
+  --color-secondary: var(--color-surface-raised);
+  --color-secondary-foreground: var(--color-text);
+  --color-muted: var(--color-surface);
+  --color-muted-foreground: var(--color-text-muted);
+  --color-accent-foreground: var(--color-accent-fg);
+  --color-destructive: var(--color-danger);
+  --color-input: var(--color-border);
+  --color-ring: var(--color-accent);
+
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-edu), cursive;
+  --font-heading: var(--font-sans);
+
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body {
+    overflow-x: clip;
+  }
+  html {
+    @apply font-sans;
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-bg text-text antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
