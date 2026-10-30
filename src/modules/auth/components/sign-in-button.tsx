@@ -5,11 +5,16 @@ import { Button } from "@/components/ui/button";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-type Props = { variant?: "primary" | "text"; className?: string };
+type Props = {
+  variant?: "primary" | "text";
+  /** Shows "Sign in" on small screens; the accessible name stays "Sign in with GitHub". */
+  compact?: boolean;
+  className?: string;
+};
 
 const FAILED = "Sign-in failed. Try again.";
 
-export function SignInButton({ variant = "primary", className }: Props) {
+export function SignInButton({ variant = "primary", compact = false, className }: Props) {
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -44,7 +49,16 @@ export function SignInButton({ variant = "primary", className }: Props) {
         className={variant === "text" ? "px-0 text-text hover:text-accent" : undefined}
       >
         <GitHubMark />
-        {pending ? "Signing in…" : "Sign in with GitHub"}
+        {pending ? (
+          "Signing in…"
+        ) : compact ? (
+          <>
+            <span className="sm:hidden">Sign in</span>
+            <span className="hidden sm:inline">Sign in with GitHub</span>
+          </>
+        ) : (
+          "Sign in with GitHub"
+        )}
       </Button>
       <span aria-live="polite" className="text-sm text-danger">
         {failed ? FAILED : null}

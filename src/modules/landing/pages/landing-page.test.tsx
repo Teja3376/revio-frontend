@@ -12,22 +12,14 @@ beforeEach(() => {
 });
 
 describe("LandingPage", () => {
-  it("has one h1, one header and one footer", () => {
+  it("has one h1", () => {
     render(<LandingPage />);
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
-    expect(screen.getAllByRole("banner")).toHaveLength(1);
-    expect(screen.getAllByRole("contentinfo")).toHaveLength(1);
   });
 
-  it("offers sign-in in the header and the hero", () => {
+  it("offers sign-in in the hero and the install section", () => {
     render(<LandingPage />);
-    const header = screen.getByRole("banner");
-    expect(
-      within(header).getByRole("button", { name: /sign in with github/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getAllByRole("button", { name: /sign in with github/i }).length,
-    ).toBeGreaterThanOrEqual(3);
+    expect(screen.getAllByRole("button", { name: /sign in with github/i })).toHaveLength(2);
   });
 
   it("lists the three install options", () => {

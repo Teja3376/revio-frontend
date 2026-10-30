@@ -168,3 +168,14 @@ Env (`.env.example` shipped, real values only in gitignored `.env.local`): `NEXT
 ## Left to the builder
 
 Component breakdown inside modules, exact spacing/type scale, SVG layer artwork details, shadcn components chosen, copy for empty states and section text (within the word limits), skeleton design, and the test file layout.
+
+## Addendum (2026-10-30): owner feedback after the first landing build
+
+Owner asked for: a "writing" load animation on the headline with the background in sync, a plain statement of what Revio does, wider content, a docs page, and a developer "connect" page. Approved in chat ("ok work it then").
+
+- **Width:** content cap goes from 1120px to 1440px (token `--container-page`), still centred; long prose keeps a readable measure (~65ch).
+- **Hero sentence:** "Revio reviews every change for bugs and security holes before you ship." (12 words). Headline unchanged.
+- **Load animation** *(my call on technique)*: each headline line is revealed left to right by a moving mask (transform only), with a small amber pen mark riding the edge; "Review smarter." then "Ship confidently.". Background in sync: code lines fade in first, diff blocks rise in while the headline writes, comment chips land as it finishes, then the sentence and actions fade up. CSS only, so it runs before hydration; `prefers-reduced-motion: reduce` shows everything at once. Animations live on inner elements so they never fight the parallax transforms.
+- **Site chrome:** header and footer move to a `site` module and wrap `/`, `/docs`, `/connect` through an `app/(site)/layout.tsx`. Header nav: Docs, Connect, Sign in (short "Sign in" label below `sm`).
+- **`/docs`** *(module `docs`)*: one page, sticky sidebar of anchor links on ≥ lg. Sections: Overview; Install (CLI, VS Code, GitHub App); Set up (Gemini key, `.revio.json`, pre-commit hook); Use (CLI commands and exit codes, VS Code commands/settings, PR reviews); Configuration reference; FAQ. Written only from the real code: the CLI is documented as built; VS Code and the GitHub App are marked "In progress" / "Coming soon" with what exists today. No invented features or numbers.
+- **`/connect`** *(module `connect`)*: "For developers, by developers." One line about the owner, a link to the public GitHub profile (`github.com/Teja3376`, profile only; repos stay private), and a form: name, email, topic (feedback, bug, collaborate, hire), message. *(my call, owner didn't choose)*: messages are saved to a Supabase table `contact_messages` through a server action, validated with zod on both sides, with a hidden honeypot field against bots and length caps. RLS allows anonymous insert only; nobody can read rows through the API (owner reads them in the Supabase dashboard). The SQL ships as a migration file; applying it to the Supabase project needs the owner's go-ahead (CLAUDE.md). Until it's applied, sending shows a clear error.

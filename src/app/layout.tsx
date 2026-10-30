@@ -16,7 +16,7 @@ const edu = Edu_NSW_ACT_Cursive({
 
 export const metadata: Metadata = {
   title: "Revio · Review smarter. Ship confidently.",
-  description: "AI code review in your terminal, editor and pull requests.",
+  description: "Revio reviews every change for bugs and security holes before you ship.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

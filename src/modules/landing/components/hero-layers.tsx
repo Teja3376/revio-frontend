@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 // Revio's hand-made parallax art. Decorative only: every layer is aria-hidden.
 
 // Fixed pseudo-random sequence so server and client render the same SVG.
@@ -60,7 +62,11 @@ export function DiffBlocksLayer() {
         const height = 24 + b.rows * 26;
         const edge = b.kind === "add" ? "fill-diff-add" : "fill-diff-del";
         return (
-          <g key={`${b.x}-${b.y}`}>
+          <g
+            key={`${b.x}-${b.y}`}
+            className="hero-rise"
+            style={{ "--delay": `${0.3 + bi * 0.25}s` } as CSSProperties}
+          >
             <rect
               x={b.x}
               y={b.y}
@@ -104,8 +110,12 @@ const CHIPS: Chip[] = [
 export function CommentChipsLayer() {
   return (
     <div aria-hidden="true" className="relative size-full">
-      {CHIPS.map((c) => (
-        <div key={c.label} className={`absolute flex flex-col items-start gap-1 ${c.position}`}>
+      {CHIPS.map((c, i) => (
+        <div
+          key={c.label}
+          className={`absolute flex flex-col items-start gap-1 ${c.position} hero-land`}
+          style={{ "--delay": `${2 + i * 0.2}s` } as CSSProperties}
+        >
           <span
             className={`rounded-full border border-border bg-surface-raised px-3 py-1.5 text-xs ${c.tone}`}
           >
