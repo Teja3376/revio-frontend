@@ -20,15 +20,18 @@ export function SignInButton({ variant = "primary", className }: Props) {
   async function signIn() {
     setPending(true);
     setFailed(false);
-    const { error } = await createBrowserSupabase().auth.signInWithOAuth({
-      provider: "github",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-    // On success the browser is already leaving for GitHub; only failures land here.
-    if (error) {
-      setPending(false);
-      setFailed(true);
+    try {
+      const { error } = await createBrowserSupabase().auth.signInWithOAuth({
+        provider: "github",
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
+      // On success the browser is already leaving for GitHub; only failures land here.
+      if (!error) return;
+    } catch {
+      // Missing env or a network error: fall through to the failure state.
     }
+    setPending(false);
+    setFailed(true);
   }
 
   return (

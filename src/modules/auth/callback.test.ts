@@ -28,17 +28,27 @@ describe("handleAuthCallback", () => {
     expect(res.headers.get("location")).toBe("https://revio.test/reviews");
   });
 
-  it.each(["https://evil.com", "//evil.com", "/\\evil.com", "reviews"])(
-    "ignores an unsafe next %s",
-    async (next) => {
-      const res = await call(`?code=abc&next=${encodeURIComponent(next)}`);
-      expect(res.headers.get("location")).toBe("https://revio.test/repos");
-    },
-  );
+  it.each([
+    "https://evil.com",
+    "//evil.com",
+    "/\\evil.com",
+    "reviews",
+    "/\t/evil.com",
+    "/\n/evil.com",
+  ])("ignores an unsafe next %s", async (next) => {
+    const res = await call(`?code=abc&next=${encodeURIComponent(next)}`);
+    expect(res.headers.get("location")).toBe("https://revio.test/repos");
+  });
 
   it("sends the user back with auth_error when there is no code", async () => {
     const res = await call("?error=access_denied");
     expect(exchangeCodeForSession).not.toHaveBeenCalled();
+    expect(res.headers.get("location")).toBe("https://revio.test/?auth_error=1");
+  });
+
+  it("sends the user back with auth_error when the exchange throws", async () => {
+    exchangeCodeForSession.mockRejectedValue(new Error("network down"));
+    const res = await call("?code=abc");
     expect(res.headers.get("location")).toBe("https://revio.test/?auth_error=1");
   });
 

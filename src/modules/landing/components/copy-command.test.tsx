@@ -41,6 +41,12 @@ describe("CopyCommand", () => {
     expect(screen.getByText(CMD)).toBeInTheDocument();
   });
 
+  it("keeps the $ prompt out of the selectable command", () => {
+    setClipboard(undefined);
+    const { container } = render(<CopyCommand command={CMD} />);
+    expect(container.querySelector("code")?.textContent).toBe(CMD);
+  });
+
   it("says Copy failed when writing is denied", async () => {
     setClipboard({ writeText: vi.fn().mockRejectedValue(new Error("denied")) });
     render(<CopyCommand command={CMD} />);

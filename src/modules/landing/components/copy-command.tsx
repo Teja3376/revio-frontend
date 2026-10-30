@@ -39,12 +39,10 @@ export function CopyCommand({ command, className }: { command: string; className
         className,
       )}
     >
-      <code className="select-all text-sm text-text">
-        <span aria-hidden="true" className="mr-2 text-text-muted">
-          $
-        </span>
-        {command}
-      </code>
+      <span aria-hidden="true" className="select-none text-sm text-text-muted">
+        $
+      </span>
+      <code className="-ml-1 select-all text-sm text-text">{command}</code>
       <button
         type="button"
         onClick={copy}

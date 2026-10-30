@@ -44,6 +44,16 @@ describe("SignInButton", () => {
     expect(screen.getByRole("button", { name: /sign in with github/i })).toBeEnabled();
   });
 
+  it("shows the error and re-enables when the Supabase client throws", async () => {
+    signInWithOAuth.mockImplementation(() => {
+      throw new Error("Your project's URL and Key are required");
+    });
+    render(<SignInButton />);
+    await userEvent.click(screen.getByRole("button", { name: /sign in with github/i }));
+    expect(await screen.findByText(FAILED)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /sign in with github/i })).toBeEnabled();
+  });
+
   it("shows the error when the callback sent the user back with auth_error", async () => {
     window.history.replaceState(null, "", "/?auth_error=1");
     render(<SignInButton />);
