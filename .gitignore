@@ -41,3 +41,6 @@ next-env.d.ts
 
 # check builds beside next dev
 /.next-check/
+
+# re-created by next dev
+AGENTS.md
