@@ -32,7 +32,7 @@ export function DocSection({
           </span>
         ) : null}
       </div>
-      <div className="mt-4 flex flex-col gap-4 leading-7 text-text-muted [&>h3]:max-w-[72ch] [&>p]:max-w-[72ch]">
+      <div className="mt-4 flex flex-col gap-4 leading-7 text-text-muted [&>h3]:max-w-[72ch] [&>p]:max-w-[72ch] [&_li>p]:max-w-[72ch]">
         {children}
       </div>
     </section>

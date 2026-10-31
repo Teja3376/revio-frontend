@@ -1,11 +1,21 @@
 import { PageTransition } from "@/components/page-transition";
 import { Code, CodeBlock, Command, DocSection, DocTable } from "../components/docs-ui";
+import { BigRepos, Ci, DailyUse, HowItWorks, TeamRules } from "../sections/advanced";
+import { FirstReview, Glossary } from "../sections/beginner";
+import { Troubleshooting } from "../sections/troubleshooting";
 
 // Everything here is written from the real code in revio-backend (CLI, core, VS Code
 // package.json) and the design spec. Update it when those change.
 
 const NAV = [
   { group: "Start", items: [{ id: "overview", label: "Overview" }] },
+  {
+    group: "Beginners",
+    items: [
+      { id: "first-review", label: "Your first review" },
+      { id: "glossary", label: "Words you’ll see" },
+    ],
+  },
   {
     group: "Install",
     items: [
@@ -25,17 +35,46 @@ const NAV = [
   {
     group: "Use",
     items: [
+      { id: "daily-use", label: "Everyday workflow" },
       { id: "use-cli", label: "CLI commands" },
       { id: "use-vscode", label: "In VS Code" },
       { id: "use-github", label: "On pull requests" },
     ],
   },
   {
+    group: "Advanced",
+    items: [
+      { id: "ci", label: "Run in CI" },
+      { id: "team-rules", label: "Team rules" },
+      { id: "big-repos", label: "Big repos" },
+      { id: "how-it-works", label: "How a review works" },
+    ],
+  },
+  {
     group: "Reference",
     items: [
       { id: "config-reference", label: "Configuration" },
+      { id: "troubleshooting", label: "Messages and fixes" },
       { id: "faq", label: "FAQ" },
     ],
+  },
+];
+
+const PATHS = [
+  {
+    href: "#first-review",
+    who: "New to this",
+    what: "Never used a review tool, or new to the terminal? Get your first review in ten minutes.",
+  },
+  {
+    href: "#daily-use",
+    who: "Use git every day",
+    what: "Fit Revio around save, commit and push without slowing down.",
+  },
+  {
+    href: "#ci",
+    who: "Lead a team or own CI",
+    what: "Block risky merges, share rules, and tune depth and models.",
   },
 ];
 
@@ -43,7 +82,11 @@ export function DocsPage() {
   return (
     <PageTransition>
       <div className="mx-auto grid max-w-page gap-12 px-6 py-16 lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-20">
-        <nav aria-label="Docs sections" className="lg:sticky lg:top-24 lg:self-start">
+        <nav
+          aria-label="Docs sections"
+          data-lenis-prevent
+          className="lg:sticky lg:top-24 lg:max-h-[calc(100svh-7rem)] lg:self-start lg:overflow-y-auto lg:pb-6"
+        >
           <ul className="flex flex-col gap-6 text-sm">
             {NAV.map((g) => (
               <li key={g.group}>
@@ -98,7 +141,25 @@ export function DocsPage() {
               maps, binary files and deleted files, plus anything you list in{" "}
               <Code>.revio.json</Code>. Gitignored files such as <Code>.env</Code> are never sent.
             </p>
+            <ul aria-label="Pick your path" className="grid gap-4 md:grid-cols-3">
+              {PATHS.map((p) => (
+                <li key={p.href}>
+                  <a
+                    href={p.href}
+                    className="flex h-full flex-col gap-2 rounded-xl border border-border p-5 hover:border-accent"
+                  >
+                    <span className="font-medium text-text">{p.who}</span>
+                    <span className="text-sm">{p.what}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </DocSection>
+
+          <div className="flex flex-col gap-14">
+            <FirstReview />
+            <Glossary />
+          </div>
 
           <div className="flex flex-col gap-14">
             <DocSection id="install-cli" title="Install the CLI" status="Publishing to npm soon">
@@ -193,6 +254,7 @@ export function DocsPage() {
           </div>
 
           <div className="flex flex-col gap-14">
+            <DailyUse />
             <DocSection id="use-cli" title="Use the CLI">
               <p>Run these inside a git repository.</p>
               <DocTable
@@ -283,6 +345,13 @@ export function DocsPage() {
           </div>
 
           <div className="flex flex-col gap-14">
+            <Ci />
+            <TeamRules />
+            <BigRepos />
+            <HowItWorks />
+          </div>
+
+          <div className="flex flex-col gap-14">
             <DocSection id="config-reference" title="Configuration reference">
               <DocTable
                 label=".revio.json keys"
@@ -307,6 +376,7 @@ export function DocsPage() {
                 ]}
               />
             </DocSection>
+            <Troubleshooting />
 
             <DocSection id="faq" title="FAQ">
               <h3 className="font-medium text-text">Does Revio keep my code?</h3>

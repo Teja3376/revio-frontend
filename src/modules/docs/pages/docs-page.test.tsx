@@ -68,4 +68,44 @@ describe("DocsPage", () => {
     hook.innerHTML = container.querySelector("#setup-hook")?.innerHTML ?? "";
     expect(hook.textContent).toMatch(/can.t run/i);
   });
+
+  it("lets each kind of developer pick a starting point", () => {
+    render(<DocsPage />);
+    const paths = screen.getByRole("list", { name: "Pick your path" });
+    const links = within(paths)
+      .getAllByRole("link")
+      .map((l) => l.getAttribute("href"));
+    expect(links).toEqual(["#first-review", "#daily-use", "#ci"]);
+  });
+
+  it("walks a beginner through a first review step by step", () => {
+    render(<DocsPage />);
+    const steps = within(document.getElementById("first-review") as HTMLElement).getAllByRole(
+      "listitem",
+    );
+    expect(steps.length).toBeGreaterThanOrEqual(5);
+    expect(screen.getByRole("table", { name: "Parts of a Revio line" })).toBeInTheDocument();
+  });
+
+  it("gives a CI recipe that fetches history and blocks on errors", () => {
+    const { container } = render(<DocsPage />);
+    const ci = container.querySelector("#ci")?.textContent ?? "";
+    expect(ci).toContain("fetch-depth: 0");
+    expect(ci).toContain("revio review --base origin/");
+    expect(ci).toContain("--block-on error");
+    expect(ci).toContain("secrets.GEMINI_API_KEY");
+  });
+
+  it("explains the CLI's real messages", () => {
+    render(<DocsPage />);
+    const table = screen.getByRole("table", { name: "Messages and fixes" });
+    for (const msg of [
+      "Revio needs a git repository.",
+      "Set GEMINI_API_KEY to use Revio.",
+      "No changes to review.",
+      "Gemini rate limit reached. Wait a minute and try again.",
+    ]) {
+      expect(within(table).getByText(msg)).toBeInTheDocument();
+    }
+  });
 });
