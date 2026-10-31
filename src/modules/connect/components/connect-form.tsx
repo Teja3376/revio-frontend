@@ -1,30 +1,59 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { Controller, type Resolver, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { sendMessage } from "../actions";
-import { type ContactState, type ContactValues, TOPICS } from "../schema";
+import { type ContactField, type ContactInput, ContactSchema, TOPICS } from "../schema";
 
-const field =
-  "w-full rounded-lg border border-border bg-surface px-3.5 py-2.5 text-text placeholder:text-dim_grey-600 aria-[invalid=true]:border-danger";
+const FIELDS: ContactField[] = ["name", "email", "topic", "message"];
+
+type FormValues = ContactInput & { hp_extra: string };
+
+// The schema strips hp_extra; the submit handler adds it back so the server can spot bots.
+const resolver = zodResolver(ContactSchema) as unknown as Resolver<FormValues>;
 
 export function ConnectForm() {
-  const [state, action, pending] = useActionState<ContactState, FormData>(sendMessage, {
-    status: "idle",
+  const form = useForm<FormValues>({
+    resolver,
+    defaultValues: { name: "", email: "", topic: "feedback", message: "", hp_extra: "" },
   });
-
-  const formRef = useRef<HTMLFormElement>(null);
+  const [pending, startTransition] = useTransition();
+  const [sent, setSent] = useState(false);
+  const [failure, setFailure] = useState<string | null>(null);
   const thanksRef = useRef<HTMLParagraphElement>(null);
 
-  // Move focus so screen-reader users hear what happened.
+  // Focus the thanks message so screen-reader users hear that it worked.
   useEffect(() => {
-    if (state.status === "sent") thanksRef.current?.focus();
-    if (state.status === "invalid") {
-      formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
-    }
-  }, [state]);
+    if (sent) thanksRef.current?.focus();
+  }, [sent]);
 
-  if (state.status === "sent") {
+  const onSubmit = form.handleSubmit((values) => {
+    setFailure(null);
+    startTransition(async () => {
+      const result = await sendMessage({ ...values, hp_extra: form.getValues("hp_extra") });
+      if (result.status === "sent") return setSent(true);
+      if (result.status === "error") return setFailure(result.message);
+      const first = FIELDS.find((f) => result.errors[f]);
+      for (const f of FIELDS) {
+        const message = result.errors[f];
+        if (message) form.setError(f, { message }, { shouldFocus: f === first });
+      }
+    });
+  });
+
+  if (sent) {
     return (
       <p
         ref={thanksRef}
@@ -37,100 +66,106 @@ export function ConnectForm() {
     );
   }
 
-  const errors = state.status === "invalid" ? state.errors : {};
-  const values: Partial<ContactValues> =
-    state.status === "invalid" || state.status === "error" ? (state.values ?? {}) : {};
-
-  const describe = (name: keyof ContactValues) =>
-    errors[name] ? { "aria-invalid": true, "aria-describedby": `${name}-error` } : {};
-
-  const errorText = (name: keyof ContactValues) =>
-    errors[name] ? (
-      <p id={`${name}-error`} className="text-sm text-danger">
-        {errors[name]}
-      </p>
-    ) : null;
-
   return (
-    <form ref={formRef} action={action} noValidate className="flex flex-col gap-5">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <label htmlFor="name" className="text-sm text-text">
-            Name
-          </label>
-          <input
-            id="name"
-            name="name"
-            required
-            autoComplete="name"
-            defaultValue={values.name}
-            className={field}
-            {...describe("name")}
-          />
-          {errorText("name")}
-        </div>
-        <div className="flex flex-col gap-2">
-          <label htmlFor="email" className="text-sm text-text">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            required
-            type="email"
-            autoComplete="email"
-            defaultValue={values.email}
-            className={field}
-            {...describe("email")}
-          />
-          {errorText("email")}
-        </div>
-      </div>
-      <div className="flex flex-col gap-2">
-        <label htmlFor="topic" className="text-sm text-text">
-          Topic
-        </label>
-        <select
-          id="topic"
-          name="topic"
-          defaultValue={values.topic ?? "feedback"}
-          className={field}
-          {...describe("topic")}
-        >
-          {TOPICS.map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label}
-            </option>
-          ))}
-        </select>
-        {errorText("topic")}
-      </div>
-      <div className="flex flex-col gap-2">
-        <label htmlFor="message" className="text-sm text-text">
-          Message
-        </label>
-        <textarea
-          id="message"
-          name="message"
-          required
-          rows={6}
-          defaultValue={values.message}
-          className={field}
-          {...describe("message")}
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
+      <FieldGroup className="grid gap-5 sm:grid-cols-2">
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="name">Name</FieldLabel>
+              <Input
+                {...field}
+                id="name"
+                autoComplete="name"
+                required
+                aria-invalid={fieldState.invalid}
+                className="h-11"
+              />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
         />
-        {errorText("message")}
-      </div>
+        <Controller
+          name="email"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <Input
+                {...field}
+                id="email"
+                type="email"
+                autoComplete="email"
+                required
+                aria-invalid={fieldState.invalid}
+                className="h-11"
+              />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
+          )}
+        />
+      </FieldGroup>
+
+      <Controller
+        name="topic"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="topic">Topic</FieldLabel>
+            <Select
+              items={TOPICS}
+              value={field.value}
+              onValueChange={(value) => field.onChange(value)}
+            >
+              <SelectTrigger
+                id="topic"
+                ref={field.ref}
+                aria-label="Topic"
+                aria-invalid={fieldState.invalid}
+                onBlur={field.onBlur}
+                className="h-11 w-full"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TOPICS.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError errors={[fieldState.error]} />
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="message"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="message">Message</FieldLabel>
+            <Textarea {...field} id="message" rows={6} required aria-invalid={fieldState.invalid} />
+            <FieldError errors={[fieldState.error]} />
+          </Field>
+        )}
+      />
+
       {/* Honeypot: hidden from people and screen readers, filled only by bots. */}
       <div aria-hidden="true" className="absolute -left-[9999px] size-px overflow-hidden">
         <label htmlFor="hp_extra">Leave this empty</label>
-        <input id="hp_extra" name="hp_extra" tabIndex={-1} autoComplete="off" />
+        <input id="hp_extra" tabIndex={-1} autoComplete="off" {...form.register("hp_extra")} />
       </div>
+
       <div className="flex flex-wrap items-center gap-4">
         <Button type="submit" size="xl" disabled={pending}>
           {pending ? "Sending…" : "Send message"}
         </Button>
         <p aria-live="polite" className="text-sm text-danger">
-          {state.status === "error" ? state.message : null}
+          {failure}
         </p>
       </div>
     </form>

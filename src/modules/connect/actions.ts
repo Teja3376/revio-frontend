@@ -1,29 +1,26 @@
 "use server";
 
 import { createAdminSupabase } from "@/lib/supabase/admin";
-import { ContactSchema, type ContactState, type ContactValues } from "./schema";
+import { type ContactField, type ContactResult, ContactSchema } from "./schema";
 
 const FAILED = "Couldn’t send your message. Try again in a minute.";
 const RATE_LIMITED = "Too many messages right now. Try again in an hour.";
 
-export async function sendMessage(_prev: ContactState, data: FormData): Promise<ContactState> {
-  // Hidden field only bots fill in: pretend it worked, save nothing.
-  if (String(data.get("hp_extra") ?? "")) return { status: "sent" };
+/** Called from the Connect form. Validates again on the server: never trust the browser. */
+export async function sendMessage(input: unknown): Promise<ContactResult> {
+  const raw = typeof input === "object" && input !== null ? (input as Record<string, unknown>) : {};
 
-  const values: ContactValues = {
-    name: String(data.get("name") ?? ""),
-    email: String(data.get("email") ?? ""),
-    topic: String(data.get("topic") ?? ""),
-    message: String(data.get("message") ?? ""),
-  };
-  const parsed = ContactSchema.safeParse(values);
+  // Hidden field only bots fill in: pretend it worked, save nothing.
+  if (typeof raw.hp_extra === "string" && raw.hp_extra) return { status: "sent" };
+
+  const parsed = ContactSchema.safeParse(raw);
   if (!parsed.success) {
-    const errors: Partial<Record<keyof ContactValues, string>> = {};
+    const errors: Partial<Record<ContactField, string>> = {};
     for (const issue of parsed.error.issues) {
-      const key = issue.path[0] as keyof ContactValues;
+      const key = issue.path[0] as ContactField;
       errors[key] ??= issue.message;
     }
-    return { status: "invalid", errors, values };
+    return { status: "invalid", errors };
   }
 
   try {
@@ -31,12 +28,14 @@ export async function sendMessage(_prev: ContactState, data: FormData): Promise<
     const { error } = await createAdminSupabase().from("contact_messages").insert(parsed.data);
     if (error) {
       console.error("contact_messages insert failed:", error.message);
-      const limited = error.message.includes("rate_limited");
-      return { status: "error", message: limited ? RATE_LIMITED : FAILED, values };
+      return {
+        status: "error",
+        message: error.message.includes("rate_limited") ? RATE_LIMITED : FAILED,
+      };
     }
   } catch (e) {
     console.error("contact_messages insert failed:", e);
-    return { status: "error", message: FAILED, values };
+    return { status: "error", message: FAILED };
   }
   return { status: "sent" };
 }

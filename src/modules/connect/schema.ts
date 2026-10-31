@@ -30,14 +30,10 @@ export const ContactSchema = z.object({
     .max(2000, { error: "Keep it under 2,000 characters." }),
 });
 
-export type ContactValues = Record<"name" | "email" | "topic" | "message", string>;
+export type ContactInput = z.input<typeof ContactSchema>;
+export type ContactField = keyof ContactInput;
 
-export type ContactState =
-  | { status: "idle" }
+export type ContactResult =
   | { status: "sent" }
-  | {
-      status: "invalid";
-      errors: Partial<Record<keyof ContactValues, string>>;
-      values?: ContactValues;
-    }
-  | { status: "error"; message: string; values?: ContactValues };
+  | { status: "invalid"; errors: Partial<Record<ContactField, string>> }
+  | { status: "error"; message: string };
