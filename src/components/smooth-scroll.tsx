@@ -2,7 +2,7 @@
 
 import { ReactLenis, useLenis } from "lenis/react";
 import { usePathname } from "next/navigation";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, Suspense, useEffect, useRef, useState } from "react";
 
 // Leaves room for the 64px sticky header when gliding to #anchors.
 const HEADER_OFFSET = -80;
@@ -46,7 +46,10 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
         anchors: reduce ? { offset: HEADER_OFFSET, immediate: true } : { offset: HEADER_OFFSET },
       }}
     >
-      <ResetOnNavigate />
+      {/* reads the URL, so it must not block prerendering */}
+      <Suspense fallback={null}>
+        <ResetOnNavigate />
+      </Suspense>
       {children}
     </ReactLenis>
   );

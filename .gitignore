@@ -38,3 +38,6 @@ next-env.d.ts
 # plan workspaces
 .superpowers/
 .hallmark/
+
+# check builds beside next dev
+/.next-check/

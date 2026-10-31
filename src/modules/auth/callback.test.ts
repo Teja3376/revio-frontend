@@ -1,6 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const exchangeCodeForSession = vi.fn();
+const fetchMock = vi.fn();
 vi.mock("@/lib/supabase/server", () => ({
   createServerSupabase: async () => ({ auth: { exchangeCodeForSession } }),
 }));
@@ -10,9 +11,19 @@ import { handleAuthCallback } from "./callback";
 const call = (query: string) =>
   handleAuthCallback(new Request(`https://revio.test/auth/callback${query}`));
 
+const SESSION = { access_token: "supa-jwt", provider_token: "gho_123" };
+
 beforeEach(() => {
   exchangeCodeForSession.mockReset();
-  exchangeCodeForSession.mockResolvedValue({ data: {}, error: null });
+  exchangeCodeForSession.mockResolvedValue({ data: { session: SESSION }, error: null });
+  fetchMock.mockReset();
+  fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+  vi.stubGlobal("fetch", fetchMock);
+  vi.stubEnv("NEXT_PUBLIC_API_URL", "https://api.test");
+});
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("handleAuthCallback", () => {
@@ -56,5 +67,26 @@ describe("handleAuthCallback", () => {
     exchangeCodeForSession.mockResolvedValue({ data: {}, error: new Error("bad code") });
     const res = await call("?code=abc");
     expect(res.headers.get("location")).toBe("https://revio.test/?auth_error=1");
+  });
+
+  it("links the user's GitHub installations with the provider token, once, server-side", async () => {
+    await call("?code=abc");
+    expect(fetchMock).toHaveBeenCalledWith("https://api.test/me/github-link", {
+      method: "POST",
+      headers: { Authorization: "Bearer supa-jwt", "Content-Type": "application/json" },
+      body: JSON.stringify({ githubToken: "gho_123" }),
+    });
+  });
+
+  it("still signs the user in when linking fails", async () => {
+    fetchMock.mockRejectedValue(new Error("down"));
+    const res = await call("?code=abc");
+    expect(res.headers.get("location")).toBe("https://revio.test/repos");
+  });
+
+  it("skips linking when no API is configured", async () => {
+    vi.stubEnv("NEXT_PUBLIC_API_URL", "");
+    await call("?code=abc");
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
