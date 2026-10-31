@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><title>Revio</title>
+  <rect rx="112" fill="#0d060f"/>
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="#38240e" stroke-width="4"/>
+  <path d="M184 168v196M184 262c26-60 76-94 152-86" fill="none" stroke="#cf8c44" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M168 404c40-14 80 14 120 0s80 14 120 0" fill="none" stroke="#cf8c44" stroke-width="12" stroke-linecap="round" opacity=".55"/>
+</svg>
