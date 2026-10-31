@@ -2,26 +2,29 @@ import { CliSample } from "./cli-sample";
 import { GithubSample } from "./github-sample";
 import { VscodeSample } from "./vscode-sample";
 
-const TOOLS = [
+const STEPS = [
   {
-    title: "In your terminal",
-    body: "Checks your changes as you save, and stays quiet unless something matters.",
-    when: "On save, on demand, before commit",
-    depth: "Quick: bugs, security",
+    title: "You save: Revio checks it in your terminal",
+    body: "Run revio review, or leave revio watch running. It stays quiet unless something matters.",
+    depth: "Quick: bugs and security",
+    caption:
+      "Revio read the lines you changed in users.ts and dates.ts. It found an SQL injection on line 42 and a crash on line 43, and printed the fix under each.",
     Sample: CliSample,
   },
   {
-    title: "In your editor",
-    body: "Underlines problems after each commit, with a one-click fix.",
-    when: "After each commit",
-    depth: "Normal: adds performance, quality",
+    title: "You commit: Revio marks it in your editor",
+    body: "The VS Code extension reviews each commit in the background and underlines what it finds.",
+    depth: "Normal: adds performance and quality",
+    caption:
+      "The same SQL injection, underlined on line 42. Hover it for the reason, then pick “Apply Revio fix” to rewrite the line.",
     Sample: VscodeSample,
   },
   {
-    title: "On your pull requests",
-    body: "Inline comments on the lines that need them, plus one summary with a risk level.",
-    when: "When a PR opens or updates",
-    depth: "Full: adds style, summary, risk",
+    title: "You open a pull request: Revio comments on GitHub",
+    body: "The GitHub App reviews every push to the pull request, so your reviewer starts with the problems already found.",
+    depth: "Full: adds style, a summary and a risk level",
+    caption:
+      "A comment on the exact line with a suggested change you can commit, plus one summary that rates the pull request’s risk.",
     Sample: GithubSample,
   },
 ];
@@ -32,9 +35,13 @@ export function ToolsSection() {
       <h2 id="tools-heading" className="font-display text-4xl text-text md:text-5xl">
         One reviewer, three places.
       </h2>
-      <div className="mt-16 flex flex-col gap-24">
-        {TOOLS.map(({ title, body, when, depth, Sample }, i) => (
-          <div
+      <p className="mt-5 max-w-[60ch] text-lg text-text-muted">
+        Revio checks the same change at three moments, a little deeper each time. Here is what it
+        caught in one small change.
+      </p>
+      <ol aria-label="How Revio reviews a change" className="mt-16 flex flex-col gap-24">
+        {STEPS.map(({ title, body, depth, caption, Sample }, i) => (
+          <li
             key={title}
             className={`grid grid-cols-[minmax(0,1fr)] items-center gap-8 md:gap-14 ${
               i % 2 === 1
@@ -43,21 +50,18 @@ export function ToolsSection() {
             }`}
           >
             <div className={i % 2 === 1 ? "md:order-2" : undefined}>
-              <h3 className="text-2xl font-semibold text-text">{title}</h3>
+              <p className="text-sm text-accent">Step {i + 1} of 3</p>
+              <h3 className="mt-2 text-2xl font-semibold text-text">{title}</h3>
               <p className="mt-3 text-text-muted">{body}</p>
-              <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-                <dt className="text-text-muted">When</dt>
-                <dd className="text-text">{when}</dd>
-                <dt className="text-text-muted">Depth</dt>
-                <dd className="text-text">{depth}</dd>
-              </dl>
+              <p className="mt-4 text-sm text-text">{depth}</p>
             </div>
-            <div className={i % 2 === 1 ? "md:order-1" : undefined}>
+            <figure className={`flex flex-col gap-3 ${i % 2 === 1 ? "md:order-1" : ""}`}>
               <Sample />
-            </div>
-          </div>
+              <figcaption className="text-sm leading-6 text-text-muted">{caption}</figcaption>
+            </figure>
+          </li>
         ))}
-      </div>
+      </ol>
     </section>
   );
 }
