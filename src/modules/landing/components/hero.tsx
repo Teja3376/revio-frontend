@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { CopyCommand } from "@/components/copy-command";
 import { ParallaxScrolling } from "@/components/ui/parallax-scrolling";
 import { SignInButton } from "@/modules/auth";
-import { CommentChipsLayer, FarStrandsLayer, NearStrandsLayer } from "./hero-layers";
+import { FarStrandsLayer, NearStrandsLayer } from "./hero-layers";
 
 const LINES = [
   { words: ["Review", "smarter."], tone: "text-text" },
@@ -65,7 +65,7 @@ export function Hero() {
         data-parallax-layer="10"
         className="pointer-events-none absolute inset-0 z-20 hidden will-change-transform lg:block"
       >
-        <CommentChipsLayer />
+
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-32 bg-gradient-to-b from-transparent to-bg" />
     </ParallaxScrolling>

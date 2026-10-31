@@ -73,36 +73,5 @@ export function NearStrandsLayer() {
 
 type Chip = { label: string; tone: string; position: string };
 
-const CHIPS: Chip[] = [
-  { label: "possible null", tone: "text-warning", position: "left-[7%] top-[24%]" },
-  { label: "unsanitized input", tone: "text-rich_mahogany-900", position: "right-[8%] top-[64%]" },
-  { label: "N+1 query", tone: "text-info", position: "left-[12%] top-[76%]" },
-];
 
-/** Near layer: review comments with Revio's amber underline. */
-export function CommentChipsLayer() {
-  return (
-    <div aria-hidden="true" className="relative size-full">
-      {CHIPS.map((c, i) => (
-        <div
-          key={c.label}
-          className={`absolute flex flex-col items-start gap-1 ${c.position} hero-land`}
-          style={{ "--delay": `${2.6 + i * 0.25}s` } as CSSProperties}
-        >
-          <span
-            className={`rounded-full border border-border bg-surface-raised px-3 py-1.5 text-xs ${c.tone}`}
-          >
-            {c.label}
-          </span>
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 120 8"
-            className="ml-3 h-2 w-28 fill-none stroke-accent"
-          >
-            <path d="M0 4 Q 5 0 10 4 T 20 4 T 30 4 T 40 4 T 50 4 T 60 4 T 70 4 T 80 4 T 90 4 T 100 4 T 110 4 T 120 4" />
-          </svg>
-        </div>
-      ))}
-    </div>
-  );
-}
+
