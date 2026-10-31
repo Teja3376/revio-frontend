@@ -59,8 +59,6 @@ export function createApi({ baseUrl, getToken, fetch: fetchImpl, sample }: Optio
   };
 }
 
-process.env.NODE_ENV === "development" && !process.env.NEXT_PUBLIC_API_URL;
-
 export const api = createApi({
   baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "",
   getToken: async () =>

@@ -19,15 +19,22 @@ export function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger
         aria-label="Account"
-        className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm text-text hover:bg-surface"
+        className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-[13px] font-medium text-text hover:bg-surface"
       >
-        <Avatar className="size-7">
+        <Avatar className="size-5">
           {me.data?.avatarUrl ? <AvatarImage src={me.data.avatarUrl} alt="" /> : null}
           <AvatarFallback>{login?.charAt(0).toUpperCase() ?? "?"}</AvatarFallback>
         </Avatar>
         <span className="truncate">{login ?? "Account"}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
+        {login ? (
+          <DropdownMenuItem
+            render={<a href={`https://github.com/${login}`} target="_blank" rel="noreferrer" />}
+          >
+            GitHub profile
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuItem render={<Link href="/settings" />}>Settings</DropdownMenuItem>
         <DropdownMenuItem onClick={() => void signOut()}>Sign out</DropdownMenuItem>
       </DropdownMenuContent>

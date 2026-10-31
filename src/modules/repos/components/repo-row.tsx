@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { Controller, type Resolver, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
@@ -27,6 +28,7 @@ const resolver = zodResolver(IgnoreGlobsForm) as unknown as Resolver<PatternsFor
 
 export function RepoRow({ repo }: { repo: Repo }) {
   const update = useUpdateRepo(repo.id);
+  const [open, setOpen] = useState(false);
   const form = useForm<PatternsForm>({
     resolver,
     defaultValues: { patterns: repo.ignoreGlobs.join("\n") },
@@ -48,73 +50,102 @@ export function RepoRow({ repo }: { repo: Repo }) {
         ? "Saved"
         : "";
 
+  const count = repo.ignoreGlobs.length;
+  const editorId = `ignore-editor-${repo.id}`;
+
   return (
-    <li className="grid gap-6 border-t border-border py-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-12">
-      <div className="flex items-start justify-between gap-4 lg:flex-col lg:justify-start">
-        <h2 className="text-lg font-semibold text-text">{repo.fullName}</h2>
-        <div className="flex items-center gap-3 text-sm text-text-muted">
-          <Switch
-            checked={repo.enabled}
-            onCheckedChange={(enabled) => update.mutate({ enabled })}
-            aria-label={`Review pull requests in ${repo.fullName}`}
-          />
-          <span aria-hidden="true">{repo.enabled ? "Reviewing pull requests" : "Paused"}</span>
+    <li className="border-b border-border">
+      <div className="flex min-h-11 flex-wrap items-center gap-x-4 gap-y-2 px-2 py-1.5 hover:bg-surface/40">
+        <Switch
+          checked={repo.enabled}
+          onCheckedChange={(enabled) => update.mutate({ enabled })}
+          aria-label={`Review pull requests in ${repo.fullName}`}
+        />
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <h2
+            className={`truncate text-[13px] font-medium ${repo.enabled ? "text-text" : "text-text-muted"}`}
+          >
+            {repo.fullName}
+          </h2>
+          {repo.enabled ? null : (
+            <span aria-hidden="true" className="text-xs text-text-muted">
+              Paused
+            </span>
+          )}
+          <p
+            aria-live="polite"
+            className={`truncate text-xs ${update.isError ? "text-danger" : "text-text-muted"}`}
+          >
+            {status}
+          </p>
         </div>
-        <p
-          aria-live="polite"
-          className={`text-sm ${update.isError ? "text-danger" : "text-text-muted"}`}
+        <Select
+          items={DEPTHS}
+          value={repo.depth}
+          onValueChange={(depth) => depth && update.mutate({ depth: depth as Depth })}
         >
-          {status}
-        </p>
+          <SelectTrigger size="sm" aria-label="Depth" className="w-60 text-[13px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {DEPTHS.map((d) => (
+              <SelectItem key={d.value} value={d.value}>
+                {d.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={editorId}
+          onClick={() => setOpen((o) => !o)}
+          className="w-36 rounded-md px-2 py-1 text-left text-[13px] text-text-muted tabular-nums hover:bg-surface hover:text-text focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          {count === 0 ? "No ignore patterns" : `${count} ignore pattern${count === 1 ? "" : "s"}`}
+        </button>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <Field>
-          <FieldLabel htmlFor={`depth-${repo.id}`}>Depth</FieldLabel>
-          <Select
-            items={DEPTHS}
-            value={repo.depth}
-            onValueChange={(depth) => depth && update.mutate({ depth: depth as Depth })}
-          >
-            <SelectTrigger id={`depth-${repo.id}`} aria-label="Depth" className="h-10 w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {DEPTHS.map((d) => (
-                <SelectItem key={d.value} value={d.value}>
-                  {d.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FieldDescription>How deep pull request reviews go.</FieldDescription>
-        </Field>
-
-        <form onSubmit={savePatterns} noValidate>
+      {open ? (
+        <form
+          id={editorId}
+          onSubmit={savePatterns}
+          noValidate
+          className="flex max-w-xl flex-col gap-2 px-2 pt-1 pb-4 sm:pl-14"
+        >
           <Controller
             name="patterns"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={`ignore-${repo.id}`}>Ignore patterns</FieldLabel>
+                <FieldLabel htmlFor={`ignore-${repo.id}`} className="text-[13px]">
+                  Ignore patterns
+                </FieldLabel>
                 <Textarea
                   {...field}
                   id={`ignore-${repo.id}`}
                   rows={3}
                   aria-invalid={fieldState.invalid}
+                  className="text-[13px]"
                 />
-                <FieldDescription>
+                <FieldDescription className="text-xs">
                   One pattern per line. Matching files are never reviewed.
                 </FieldDescription>
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />
-          <Button type="submit" variant="outline" className="mt-3" disabled={update.isPending}>
+          <Button
+            type="submit"
+            variant="outline"
+            size="sm"
+            className="self-start"
+            disabled={update.isPending}
+          >
             Save patterns
           </Button>
         </form>
-      </div>
+      ) : null}
     </li>
   );
 }

@@ -10,5 +10,5 @@ const LABEL: Record<ReviewStatus, { text: string; tone: string }> = {
 
 export function StatusLabel({ status }: { status: ReviewStatus }) {
   const { text, tone } = LABEL[status];
-  return <span className={`text-sm font-medium ${tone}`}>{text}</span>;
+  return <span className={`text-[13px] font-medium ${tone}`}>{text}</span>;
 }

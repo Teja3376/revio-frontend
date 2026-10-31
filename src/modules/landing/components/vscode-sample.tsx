@@ -34,7 +34,7 @@ export function VscodeSample() {
           </p>
         ))}
       </div>
-      <div className="mx-5 mb-5 rounded-lg border border-border bg-surface-raised p-4">
+      <div className="mx-5 mb-5 rounded-lg border border-border bg-bg p-4">
         <p className="text-text">
           <span className="text-danger">Revio, security:</span> {flagged.message}
         </p>

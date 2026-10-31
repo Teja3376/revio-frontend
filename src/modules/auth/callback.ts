@@ -39,15 +39,26 @@ async function linkGithub(
 export async function handleAuthCallback(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  if (!code) return redirect("/?auth_error=1", url.origin);
+  if (!code) {
+    console.error(
+      "[auth] sign-in rejected:",
+      url.searchParams.get("error"),
+      url.searchParams.get("error_description"),
+    );
+    return redirect("/?auth_error=1", url.origin);
+  }
 
   let session: { access_token: string; provider_token?: string | null } | null | undefined;
   try {
     const supabase = await createServerSupabase();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) return redirect("/?auth_error=1", url.origin);
+    if (error) {
+      console.error("[auth] code exchange failed:", error.message);
+      return redirect("/?auth_error=1", url.origin);
+    }
     session = data?.session;
-  } catch {
+  } catch (err) {
+    console.error("[auth] code exchange failed:", err instanceof Error ? err.message : err);
     return redirect("/?auth_error=1", url.origin);
   }
 

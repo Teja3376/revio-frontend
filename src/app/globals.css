@@ -1,6 +1,10 @@
 /* Hallmark · checked: 2026-10-30 · genre: modern-minimal (inferred) · system: DESIGN.md (locked)
  * floor: 0 FAIL · fixed: 7 (30a, 63 x2, 40 x2, 26a, F16) · reflex fixed: 59 · structural: 3 printed (6b, 8, 9)
- * built: the project · redesign: polish · v2.0.0 */
+ * built: the project · redesign: polish · v2.0.0
+ * 2026-10-31 polish: fixed 40 x3 (field edges, danger on raised panel), 27 (popup motion), F25 (pinned PR column), F26 (balanced heads), F19 (bold is 600), 63 (arrow off "All reviews")
+ * critique: 26a/26b in app files are linter misses: shadcn Button carries the states and the :focus-visible rule below rings every link (checked by keyboard); F18 flags buttons, switches and avatars, which are not image slots */
+/* Hallmark · waive 23 · posture: committed, the orange Ship confidently line in the hero · the owner chose this hero colour and face in DESIGN.md */
+/* Hallmark · waive 84 · the terminal, editor and pull request samples are built · Gemini returns 403 until billing is on, so the project has no real review output to capture; swap in screenshots then */
 
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -94,7 +98,7 @@
   --color-muted-foreground: var(--color-text-muted);
   --color-accent-foreground: var(--color-accent-fg);
   --color-destructive: var(--color-danger);
-  --color-input: var(--color-border);
+  --color-input: var(--color-dim_grey-500); /* 3.2:1+ on bg and surface (40) */
   --color-ring: var(--color-accent);
 
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
@@ -136,6 +140,22 @@
   pre,
   samp {
     font-family: inherit;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  p,
+  li {
+    text-wrap: pretty;
+  }
+  /* Three weights in use (400, 500, 600); the browser's bold is 700. */
+  strong,
+  b,
+  th {
+    font-weight: 600;
   }
   :focus-visible {
     outline: 2px solid var(--color-accent);

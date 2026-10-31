@@ -22,7 +22,7 @@ function DashboardNavWithPath() {
 function DashboardNav({ pathname = "" }: { pathname?: string }) {
   return (
     <nav aria-label="Dashboard">
-      <ul className="flex gap-1 lg:flex-col">
+      <ul className="flex gap-0.5 lg:flex-col">
         {LINKS.map((l) => {
           const active = pathname === l.href || pathname.startsWith(`${l.href}/`);
           return (
@@ -31,8 +31,10 @@ function DashboardNav({ pathname = "" }: { pathname?: string }) {
                 href={l.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "block rounded-lg px-3 py-2 text-sm",
-                  active ? "bg-surface text-text" : "text-text-muted hover:text-text",
+                  "block rounded-md px-2.5 py-1.5 text-[13px] font-medium",
+                  active
+                    ? "bg-surface text-text"
+                    : "text-text-muted hover:bg-surface/60 hover:text-text",
                 )}
               >
                 {l.label}
@@ -50,12 +52,12 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   const unlinked = me.error instanceof ApiError && me.error.status === 404;
 
   return (
-    <div className="min-h-svh lg:grid lg:grid-cols-[240px_minmax(0,1fr)]">
-      <aside className="flex flex-col gap-6 border-b border-border px-5 py-5 lg:sticky lg:top-0 lg:h-svh lg:border-r lg:border-b-0">
-        <div className="flex items-center justify-between gap-3">
+    <div className="min-h-svh lg:grid lg:grid-cols-[208px_minmax(0,1fr)]">
+      <aside className="flex flex-col gap-4 border-b border-border px-3 py-3 lg:sticky lg:top-0 lg:h-svh lg:border-r lg:border-b-0">
+        <div className="flex h-8 items-center justify-between gap-3 px-2.5">
           <Wordmark />
           {SAMPLE_MODE ? (
-            <span className="rounded-full border border-border px-2 py-0.5 text-xs text-warning">
+            <span className="rounded border border-border px-1.5 py-px text-[11px] text-warning">
               Sample data
             </span>
           ) : null}
@@ -68,9 +70,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           <UserMenu />
         </div>
       </aside>
-      <main className="mx-auto w-full max-w-page px-6 py-10 lg:px-12">
+      <main className="min-w-0">
         {unlinked ? (
-          <p role="alert" className="mb-8 rounded-xl border border-border p-4 text-text">
+          <p role="alert" className="border-b border-border px-6 py-2.5 text-[13px] text-warning">
             Revio couldn’t see your GitHub installations yet. Sign out and sign in again to link
             them.
           </p>

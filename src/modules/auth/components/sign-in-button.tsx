@@ -14,17 +14,22 @@ type Props = {
 
 const FAILED = "Sign-in failed. Try again.";
 
+/** Supabase puts OAuth errors after "#" (never sent to the server), sometimes with no ?auth_error. */
+function failureFromUrl(): string | null {
+  const reason = new URLSearchParams(window.location.hash.slice(1)).get("error_description");
+  if (reason) return `Sign-in failed: ${reason.replace(/\.$/, "")}. Try again.`;
+  return new URLSearchParams(window.location.search).has("auth_error") ? FAILED : null;
+}
+
 export function SignInButton({ variant = "primary", compact = false, className }: Props) {
   const [pending, setPending] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [failure, setFailure] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).has("auth_error")) setFailed(true);
-  }, []);
+  useEffect(() => setFailure(failureFromUrl()), []);
 
   async function signIn() {
     setPending(true);
-    setFailed(false);
+    setFailure(null);
     try {
       const { error } = await createBrowserSupabase().auth.signInWithOAuth({
         provider: "github",
@@ -36,7 +41,7 @@ export function SignInButton({ variant = "primary", compact = false, className }
       // Missing env or a network error: fall through to the failure state.
     }
     setPending(false);
-    setFailed(true);
+    setFailure(FAILED);
   }
 
   return (
@@ -61,7 +66,7 @@ export function SignInButton({ variant = "primary", compact = false, className }
         )}
       </Button>
       <span aria-live="polite" className="text-sm text-danger">
-        {failed ? FAILED : null}
+        {failure}
       </span>
     </span>
   );
