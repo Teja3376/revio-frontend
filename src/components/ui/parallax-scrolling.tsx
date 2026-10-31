@@ -2,14 +2,15 @@
 
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "lenis";
+import { useLenis } from "lenis/react";
 import { type ReactNode, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 /**
  * Osmo-style parallax. Mark children with data-parallax-layer="<0–100>": while the
  * container scrolls out of view, each layer moves down by that percent of its height,
- * so higher numbers look farther away. Does nothing with reduced motion.
+ * so higher numbers look farther away. Smooth scrolling comes from the site-wide Lenis
+ * (SmoothScroll); this only keeps ScrollTrigger in step with it. Does nothing with reduced motion.
  */
 export function ParallaxScrolling({
   children,
@@ -19,18 +20,13 @@ export function ParallaxScrolling({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  useLenis(ScrollTrigger.update);
 
   useEffect(() => {
     const root = ref.current;
     if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     gsap.registerPlugin(ScrollTrigger);
-    const lenis = new Lenis();
-    lenis.on("scroll", ScrollTrigger.update);
-    const tick = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
-
     const timeline = gsap.timeline({
       scrollTrigger: { trigger: root, start: "top top", end: "bottom top", scrub: 0 },
     });
@@ -41,8 +37,6 @@ export function ParallaxScrolling({
     return () => {
       timeline.scrollTrigger?.kill();
       timeline.kill();
-      gsap.ticker.remove(tick);
-      lenis.destroy();
     };
   }, []);
 

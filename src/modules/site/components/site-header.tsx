@@ -9,7 +9,10 @@ const LINKS = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 h-16 border-b border-border/60 bg-bg/80 backdrop-blur">
+    <header
+      style={{ viewTransitionName: "site-header" }}
+      className="sticky top-0 z-50 h-16 border-b border-border/60 bg-bg/80 backdrop-blur"
+    >
       <div className="mx-auto flex h-full max-w-page items-center justify-between gap-6 px-6">
         <Wordmark />
         <div className="flex items-center gap-5 sm:gap-8">

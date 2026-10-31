@@ -4,25 +4,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => {
   const trigger = { kill: vi.fn() };
   const timeline = { to: vi.fn(), kill: vi.fn(), scrollTrigger: trigger };
-  const lenis = { on: vi.fn(), raf: vi.fn(), destroy: vi.fn() };
   return {
     trigger,
     timeline,
-    lenis,
-    Lenis: vi.fn(function makeLenis() {
-      return lenis;
-    }),
-    gsap: {
-      registerPlugin: vi.fn(),
-      timeline: vi.fn(() => timeline),
-      ticker: { add: vi.fn(), remove: vi.fn(), lagSmoothing: vi.fn() },
-    },
+    useLenis: vi.fn(),
+    gsap: { registerPlugin: vi.fn(), timeline: vi.fn(() => timeline) },
+    update: vi.fn(),
   };
 });
 
 vi.mock("gsap", () => ({ default: m.gsap, gsap: m.gsap }));
-vi.mock("gsap/ScrollTrigger", () => ({ ScrollTrigger: { update: vi.fn() } }));
-vi.mock("lenis", () => ({ default: m.Lenis }));
+vi.mock("gsap/ScrollTrigger", () => ({ ScrollTrigger: { update: m.update } }));
+vi.mock("lenis/react", () => ({ useLenis: m.useLenis }));
 
 import { ParallaxScrolling } from "./parallax-scrolling";
 
@@ -40,10 +33,15 @@ const tree = (
 beforeEach(() => vi.clearAllMocks());
 
 describe("ParallaxScrolling", () => {
-  it("never starts Lenis or GSAP when reduced motion is on", () => {
+  it("keeps ScrollTrigger in step with the site's smooth scroll", () => {
+    setReducedMotion(false);
+    render(tree);
+    expect(m.useLenis).toHaveBeenCalledWith(m.update);
+  });
+
+  it("never builds the timeline when reduced motion is on", () => {
     setReducedMotion(true);
     render(tree);
-    expect(m.Lenis).not.toHaveBeenCalled();
     expect(m.gsap.timeline).not.toHaveBeenCalled();
   });
 
@@ -55,16 +53,11 @@ describe("ParallaxScrolling", () => {
     expect(m.timeline.to).toHaveBeenCalledWith(layers[1], { yPercent: 10, ease: "none" }, 0);
   });
 
-  it("starts once and cleans everything up on unmount", () => {
+  it("kills its trigger and timeline on unmount", () => {
     setReducedMotion(false);
     const { unmount } = render(tree);
-    expect(m.Lenis).toHaveBeenCalledTimes(1);
-    expect(m.gsap.ticker.add).toHaveBeenCalledTimes(1);
-    const tick = m.gsap.ticker.add.mock.calls[0][0];
-
     unmount();
-    expect(m.lenis.destroy).toHaveBeenCalledTimes(1);
-    expect(m.gsap.ticker.remove).toHaveBeenCalledWith(tick);
     expect(m.trigger.kill).toHaveBeenCalledTimes(1);
+    expect(m.timeline.kill).toHaveBeenCalledTimes(1);
   });
 });
