@@ -1,9 +1,10 @@
 import { screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { renderWithQuery } from "@tests/support/render";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithQuery } from "@/test/render";
 
 vi.mock("@/lib/api", async (importOriginal) =>
-  (await import("@/test/sample-api")).sampleApiModule(importOriginal),
+  (await import("@tests/support/sample-api")).sampleApiModule(importOriginal),
 );
 vi.mock("next/navigation", () => ({
   usePathname: () => "/reviews/abc",
@@ -40,6 +41,15 @@ describe("DashboardShell", () => {
   it("shows who is signed in", async () => {
     renderWithQuery(<DashboardShell>x</DashboardShell>);
     expect(await screen.findByText("sample-user")).toBeInTheDocument();
+  });
+
+  it("links to the signed-in user's GitHub profile from the account menu", async () => {
+    renderWithQuery(<DashboardShell>x</DashboardShell>);
+    await screen.findByText("sample-user");
+    await userEvent.click(screen.getByRole("button", { name: "Account" }));
+    const item = await screen.findByRole("menuitem", { name: "GitHub profile" });
+    expect(item).toHaveAttribute("href", "https://github.com/sample-user");
+    expect(item).toHaveAttribute("target", "_blank");
   });
 
   it("says plainly when it is showing sample data", () => {

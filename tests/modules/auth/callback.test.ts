@@ -6,7 +6,7 @@ vi.mock("@/lib/supabase/server", () => ({
   createServerSupabase: async () => ({ auth: { exchangeCodeForSession } }),
 }));
 
-import { handleAuthCallback } from "./callback";
+import { handleAuthCallback } from "@/modules/auth/callback";
 
 const call = (query: string) =>
   handleAuthCallback(new Request(`https://revio.test/auth/callback${query}`));
@@ -55,6 +55,25 @@ describe("handleAuthCallback", () => {
     const res = await call("?error=access_denied");
     expect(exchangeCodeForSession).not.toHaveBeenCalled();
     expect(res.headers.get("location")).toBe("https://revio.test/?auth_error=1");
+  });
+
+  it("logs the provider's error description when sign-in is rejected", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    await call("?error=server_error&error_description=Error+getting+user+email");
+    expect(log).toHaveBeenCalledWith(
+      "[auth] sign-in rejected:",
+      "server_error",
+      "Error getting user email",
+    );
+    log.mockRestore();
+  });
+
+  it("logs why the code exchange failed", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    exchangeCodeForSession.mockResolvedValue({ data: {}, error: new Error("bad code") });
+    await call("?code=abc");
+    expect(log).toHaveBeenCalledWith("[auth] code exchange failed:", "bad code");
+    log.mockRestore();
   });
 
   it("sends the user back with auth_error when the exchange throws", async () => {

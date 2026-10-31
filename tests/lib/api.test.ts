@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
-import { ApiError, createApi } from "./api";
+import { ApiError, createApi } from "@/lib/api";
 
 const Thing = z.object({ id: z.string() });
 const json = (body: unknown, status = 200) =>

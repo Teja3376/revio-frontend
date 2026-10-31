@@ -4,7 +4,7 @@ const insert = vi.fn();
 const from = vi.fn(() => ({ insert }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminSupabase: () => ({ from }) }));
 
-import { sendMessage } from "./actions";
+import { sendMessage } from "@/modules/connect/actions";
 
 const form = (fields: Record<string, string>) => fields;
 

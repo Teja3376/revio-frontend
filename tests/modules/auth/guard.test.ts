@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { describe, expect, it } from "vitest";
-import { guardDashboard } from "./guard";
+import { guardDashboard } from "@/modules/auth/guard";
 
 const req = (path: string) => new NextRequest(`https://revio.test${path}`);
 

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { resetSampleData, sampleRequest } from "./sample-data";
+import { resetSampleData, sampleRequest } from "@/lib/sample-data";
 
 beforeEach(resetSampleData);
 

@@ -17,7 +17,7 @@ vi.mock("gsap", () => ({ default: m.gsap, gsap: m.gsap }));
 vi.mock("gsap/ScrollTrigger", () => ({ ScrollTrigger: { update: m.update } }));
 vi.mock("lenis/react", () => ({ useLenis: m.useLenis }));
 
-import { ParallaxScrolling } from "./parallax-scrolling";
+import { ParallaxScrolling } from "@/components/ui/parallax-scrolling";
 
 function setReducedMotion(reduce: boolean) {
   window.matchMedia = vi.fn().mockReturnValue({ matches: reduce }) as never;

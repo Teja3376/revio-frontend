@@ -1,11 +1,11 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithQuery } from "@tests/support/render";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resetSampleData } from "@/lib/sample-data";
-import { renderWithQuery } from "@/test/render";
 
 vi.mock("@/lib/api", async (importOriginal) =>
-  (await import("@/test/sample-api")).sampleApiModule(importOriginal),
+  (await import("@tests/support/sample-api")).sampleApiModule(importOriginal),
 );
 
 import { api } from "@/lib/api";
@@ -61,6 +61,26 @@ describe("ReviewsPage", () => {
     );
     renderWithQuery(<ReviewsPage />);
     expect(await screen.findByText(/no reviews yet/i)).toBeInTheDocument();
+  });
+
+  it("says when a filtered repository has no reviews, and offers to clear the filter", async () => {
+    vi.spyOn(api, "request").mockImplementation(async (path: string) => {
+      if (path.startsWith("/repos"))
+        return {
+          items: [
+            { id: "r1", fullName: "example/quiet", enabled: true, depth: "full", ignoreGlobs: [] },
+          ],
+        };
+      return path.includes("repo=r1")
+        ? { items: [], page: 1, pageSize: 20, total: 0 }
+        : { items: [], page: 1, pageSize: 20, total: 3 };
+    });
+    renderWithQuery(<ReviewsPage />);
+    await userEvent.click(await screen.findByRole("combobox", { name: "Repository" }));
+    await userEvent.click(await screen.findByRole("option", { name: "example/quiet" }));
+    expect(await screen.findByText("No reviews for example/quiet yet.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Show all repositories" }));
+    expect(await screen.findByText("Page 1 of 1")).toBeInTheDocument();
   });
 });
 

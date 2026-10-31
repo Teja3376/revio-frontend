@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CopyCommand } from "./copy-command";
+import { CopyCommand } from "@/components/copy-command";
 
 const CMD = "npm i -g @revio/cli";
 

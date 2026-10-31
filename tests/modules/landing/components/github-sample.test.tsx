@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { GithubSample } from "./github-sample";
+import { GithubSample } from "@/modules/landing/components/github-sample";
 
 describe("GithubSample", () => {
   it("lists risk and counts without middle-dot joins", () => {

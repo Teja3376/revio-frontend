@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { ToolsSection } from "./tools-section";
+import { ToolsSection } from "@/modules/landing/components/tools-section";
 
 describe("ToolsSection", () => {
   it("walks through save, commit and pull request in order", () => {

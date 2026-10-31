@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { SAMPLE_ISSUES } from "../sample-issues";
-import { CliSample, formatCliLine } from "./cli-sample";
+import { CliSample, formatCliLine } from "@/modules/landing/components/cli-sample";
+import { SAMPLE_ISSUES } from "@/modules/landing/sample-issues";
 
 describe("formatCliLine", () => {
   it("matches the real CLI formatter without color or glyphs", () => {

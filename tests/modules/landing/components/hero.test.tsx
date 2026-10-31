@@ -6,7 +6,7 @@ vi.mock("@/lib/supabase/client", () => ({
   createBrowserSupabase: () => ({ auth: { signInWithOAuth: vi.fn() } }),
 }));
 
-import { Hero } from "./hero";
+import { Hero } from "@/modules/landing/components/hero";
 
 beforeEach(() => {
   window.matchMedia = vi.fn().mockReturnValue({ matches: true }) as never;

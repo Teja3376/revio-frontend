@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ContactSchema } from "./schema";
+import { ContactSchema } from "@/modules/connect/schema";
 
 describe("ContactSchema", () => {
   it("accepts an email with spaces around it and trims it", () => {

@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { WhySection } from "./why-section";
+import { WhySection } from "@/modules/landing/components/why-section";
 
 describe("WhySection", () => {
   it("lists what makes Revio different, each with a reason", () => {

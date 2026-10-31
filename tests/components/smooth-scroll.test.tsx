@@ -11,7 +11,7 @@ vi.mock("lenis/react", () => ({
 }));
 vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
 
-import { SmoothScroll } from "./smooth-scroll";
+import { SmoothScroll } from "@/components/smooth-scroll";
 
 function setReducedMotion(reduce: boolean) {
   window.matchMedia = vi.fn().mockReturnValue({

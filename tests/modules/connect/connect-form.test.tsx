@@ -3,9 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const sendMessage = vi.fn();
-vi.mock("./actions", () => ({ sendMessage: (...a: unknown[]) => sendMessage(...a) }));
+vi.mock("@/modules/connect/actions", () => ({
+  sendMessage: (...a: unknown[]) => sendMessage(...a),
+}));
 
-import { ConnectForm } from "./components/connect-form";
+import { ConnectForm } from "@/modules/connect/components/connect-form";
 
 async function fillValid() {
   await userEvent.type(screen.getByLabelText("Name"), "Ada");

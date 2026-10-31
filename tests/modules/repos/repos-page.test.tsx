@@ -1,11 +1,11 @@
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithQuery } from "@tests/support/render";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resetSampleData } from "@/lib/sample-data";
-import { renderWithQuery } from "@/test/render";
 
 vi.mock("@/lib/api", async (importOriginal) =>
-  (await import("@/test/sample-api")).sampleApiModule(importOriginal),
+  (await import("@tests/support/sample-api")).sampleApiModule(importOriginal),
 );
 
 import { api } from "@/lib/api";
@@ -26,6 +26,11 @@ describe("ReposPage", () => {
     expect(within(web).getByRole("switch", { name: /review pull requests/i })).toBeChecked();
     expect(within(web).getByRole("combobox", { name: "Depth" })).toHaveTextContent(/full/i);
     const api = await row("example/api-server");
+    const toggle = within(api).getByRole("button", { name: /1 ignore pattern/i });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(within(api).queryByLabelText("Ignore patterns")).not.toBeInTheDocument();
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(within(api).getByLabelText("Ignore patterns")).toHaveValue("**/*.snap");
   });
 
@@ -55,6 +60,7 @@ describe("ReposPage", () => {
     const spy = vi.spyOn(api, "request");
     renderWithQuery(<ReposPage />);
     const web = await row("example/web-app");
+    await userEvent.click(within(web).getByRole("button", { name: /no ignore patterns/i }));
     const box = within(web).getByLabelText("Ignore patterns");
     await userEvent.type(box, "x".repeat(201));
     await userEvent.click(within(web).getByRole("button", { name: "Save patterns" }));
